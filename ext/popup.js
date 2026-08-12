@@ -20,7 +20,8 @@
     refresh: document.getElementById('refresh'),
     tapeWrap: document.getElementById('tape-wrap'),
     tape: document.getElementById('tape'),
-    clearAll: document.getElementById('clear-all')
+    clearAll: document.getElementById('clear-all'),
+    retry: document.getElementById('retry')
   };
 
   var hintTimer = null;
@@ -34,11 +35,13 @@
     els.status.textContent = msg || '';
     els.status.classList.toggle('error', !!isError);
     els.status.classList.remove('stale-fresh', 'stale-warn', 'stale-old');
+    els.retry.hidden = true;
   }
 
   function setStale(ts) {
     var lv = Ygo.staleLevel(ts);
     if (lv) els.status.classList.add(lv);
+    if (lv) els.retry.hidden = false;
   }
 
   // ---------- persistence ----------
@@ -403,6 +406,7 @@
 
   // ---------- refresh button + auto-refresh ----------
   els.refresh.addEventListener('click', refreshAll);
+  els.retry.addEventListener('click', refreshAll);
   els.clearAll.addEventListener('click', function () {
     state.watch = [];
     save();
