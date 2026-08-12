@@ -10,6 +10,11 @@
   --up: #4ade80;
   --down: #f87171;
   --flat: #94a3b8;
+  /* aliases for the shared component styles (retry-btn, alert-btn, alert-panel) */
+  --card: var(--panel);
+  --card2: var(--panel-2);
+  --border: var(--line);
+  --accent2: var(--accent-2);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -253,13 +258,13 @@ h1 { font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
 
 .card-set { font-size: 10.5px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.card-bars { grid-area: bars; display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+.card-bars { grid-area: bars; display: flex; align-items: flex-end; gap: 0.5px; height: 16px; }
 
 .card-bars .bar {
-  width: 4px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
-  opacity: 0.85;
+  width: 1px;
+  border-radius: 0;
+  background: var(--accent);
+  opacity: 0.75;
 }
 
 .card-quote { grid-area: quote; text-align: right; }

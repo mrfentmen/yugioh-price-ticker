@@ -69,6 +69,7 @@
           // normalize the client-side history
           if (!Array.isArray(c.hist)) c.hist = [];
           c.hist = c.hist.filter(function (h) { return h && typeof h.p === 'number' && typeof h.t === 'number'; });
+          if (!Array.isArray(c.daily)) c.daily = [];
           return c;
         });
       }
@@ -263,6 +264,12 @@
     if (q.price != null) {
       entry.hist.push({ p: q.price, t: Date.now() });
       if (entry.hist.length > HIST_MAX) entry.hist = entry.hist.slice(-HIST_MAX);
+      // daily price snapshot (30-day sparkline — update today's entry or push a new day)
+      if (!entry.daily) entry.daily = [];
+      var today = new Date().toISOString().slice(0, 10);
+      var last = entry.daily.length ? entry.daily[entry.daily.length - 1] : null;
+      if (last && last.d === today) { last.p = q.price; }
+      else { entry.daily.push({ d: today, p: q.price }); if (entry.daily.length > 30) entry.daily = entry.daily.slice(-30); }
     }
     entry.trend = Ygo.historyTrend(entry.hist);
     entry.ts = Date.now();
@@ -340,8 +347,8 @@
 
     var bars = document.createElement('div');
     bars.className = 'card-bars';
-    bars.title = 'Price history (latest ' + HIST_MAX + ' refreshes)';
-    var heights = Ygo.sparkBars(w.hist);
+    bars.title = '30-day price sparkline';
+    var heights = Ygo.sparkBars(w.daily, 30);
     if (heights.length) {
       heights.forEach(function (v) {
         var b = document.createElement('span');
