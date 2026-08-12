@@ -1,0 +1,10 @@
+{
+  "name": "yugioh-price-ticker",
+  "version": "1.0.0",
+  "description": "Search any Yu-Gi-Oh! card and watch its market price like a stock ticker.",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "syntax": "node --check ext/ygo.js && node --check ext/popup.js"
+  }
+}
