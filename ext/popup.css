@@ -249,6 +249,7 @@ h1 { font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
 .card-row:hover { transform: translateY(-1px); border-color: var(--accent); }
 
 .card-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.card-row.focused { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(232, 182, 76, 0.3); }
 
 .card-thumb { grid-area: thumb; width: 46px; height: 62px; object-fit: contain; border-radius: 5px; }
 
@@ -410,8 +411,9 @@ body.compact .drag-grip { left: -8px; font-size: 9px; }
 }
 
 /* ---------- retry ---------- */
-.status-row { display: flex; align-items: center; margin: 8px 16px 0; }
+.status-row { display: flex; align-items: center; margin: 8px 16px 0; gap: 4px; }
 .status-row .status { margin: 0; flex: 1; }
+.refresh-age { flex: none; font-size: 10px; color: var(--accent); font-weight: 700; white-space: nowrap; opacity: 0.8; }
 .retry-btn {
   flex: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px;
   background: var(--card); color: var(--accent);
