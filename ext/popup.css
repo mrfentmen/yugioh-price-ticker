@@ -319,6 +319,34 @@ h1 { font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
 
 .row-x:hover { background: rgba(248, 113, 113, 0.15); color: var(--down); border-color: rgba(248, 113, 113, 0.4); }
 
+/* ---------- drag grip ---------- */
+.card-row { position: relative; }
+.drag-grip {
+  position: absolute; left: -12px; top: 50%; transform: translateY(-50%);
+  width: 12px; cursor: grab; color: var(--muted);
+  font-size: 11px; letter-spacing: -2px; line-height: 1; user-select: none;
+  opacity: 0; transition: opacity 0.12s ease;
+}
+.card-row:hover .drag-grip { opacity: 0.6; }
+.drag-grip:active { cursor: grabbing; }
+.card-row.dragging { opacity: 0.4; }
+.drag-over { border: 2px solid var(--accent) !important; }
+
+/* ---------- compact view ---------- */
+body.compact .card-row { padding: 5px 8px; gap: 2px 6px; border-radius: 10px; grid-template-columns: 34px 1fr auto; }
+body.compact .card-thumb { width: 34px; height: 46px; }
+body.compact .card-name { font-size: 11.5px; }
+body.compact .card-set { font-size: 9.5px; }
+body.compact .card-price { font-size: 13px; }
+body.compact .card-variant { font-size: 7.5px; }
+body.compact .card-trend { font-size: 9.5px; }
+body.compact .card-bars { height: 12px; }
+body.compact .card-bars .bar { width: 0.8px; }
+body.compact .card-markets { font-size: 8.5px; }
+body.compact .row-x { width: 18px; height: 18px; }
+body.compact .alert-btn { width: 20px; height: 20px; font-size: 10px; }
+body.compact .drag-grip { left: -8px; font-size: 9px; }
+
 /* ---------- empty / status / footer ---------- */
 .empty { padding: 22px 14px; text-align: center; color: var(--muted); }
 

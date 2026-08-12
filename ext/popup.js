@@ -26,8 +26,13 @@
     alertLogPanel: document.getElementById('alertLogPanel'),
     portfolio: document.getElementById('portfolio'),
     sortBy: document.getElementById('sortBy'),
-    exportCsv: document.getElementById('exportCsv')
+    exportCsv: document.getElementById('exportCsv'),
+    copyClip: document.getElementById('copyClip'),
+    compactToggle: document.getElementById('compactToggle')
   };
+
+  var dragIdx = -1;
+  var compact = false;
 
   var chimeCtx = null;
   function chime() {
@@ -328,6 +333,7 @@
     els.tapeWrap.hidden = state.watch.length === 0;
     els.clearAll.hidden = state.watch.length === 0;
     els.exportCsv.hidden = state.watch.length === 0;
+    els.copyClip.hidden = state.watch.length === 0;
     renderTape();
     // portfolio total
     var sum = 0; var priced = 0;
@@ -432,6 +438,13 @@
       removeCard(w.id);
     });
 
+    // ---- drag handle ----
+    var grip = document.createElement('span');
+    grip.className = 'drag-grip';
+    grip.textContent = '⋮⋮';
+    grip.title = 'Drag to reorder';
+    row.appendChild(grip);
+
     row.appendChild(thumb);
     row.appendChild(info);
     row.appendChild(bars);
@@ -515,7 +528,8 @@
     wrap.appendChild(row);
     wrap.appendChild(panel);
 
-    row.addEventListener('click', function () {
+    row.addEventListener('click', function (ev) {
+      if (ev.target.closest('.drag-grip') || ev.target.closest('.alert-btn') || ev.target.closest('.row-x')) return;
       chrome.windows.create({ type: 'popup', url: 'https://ygoprodeck.com/card/?search=' + encodeURIComponent(w.name), width: 900, height: 700 });
     });
     row.addEventListener('keydown', function (ev) {
@@ -523,6 +537,39 @@
         ev.preventDefault();
         chrome.windows.create({ type: 'popup', url: 'https://ygoprodeck.com/card/?search=' + encodeURIComponent(w.name), width: 900, height: 700 });
       }
+    });
+
+    // ---- drag-to-reorder ----
+    row.draggable = true;
+    row.addEventListener('dragstart', function (ev) {
+      dragIdx = Array.prototype.indexOf.call(els.list.children, wrap);
+      ev.dataTransfer.effectAllowed = 'move';
+      ev.dataTransfer.setData('text/plain', '');
+      row.classList.add('dragging');
+    });
+    row.addEventListener('dragend', function () {
+      row.classList.remove('dragging');
+      els.list.querySelectorAll('.drag-over').forEach(function (el) { el.classList.remove('drag-over'); });
+      dragIdx = -1;
+    });
+    wrap.addEventListener('dragover', function (ev) {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = 'move';
+      if (dragIdx >= 0 && !wrap.classList.contains('drag-over')) {
+        els.list.querySelectorAll('.drag-over').forEach(function (el) { el.classList.remove('drag-over'); });
+        wrap.classList.add('drag-over');
+      }
+    });
+    wrap.addEventListener('drop', function (ev) {
+      ev.preventDefault();
+      wrap.classList.remove('drag-over');
+      if (dragIdx < 0) return;
+      var dropIdx = Array.prototype.indexOf.call(els.list.children, wrap);
+      if (dropIdx === dragIdx) return;
+      var item = state.watch.splice(dragIdx, 1)[0];
+      state.watch.splice(dropIdx, 0, item);
+      save();
+      render();
     });
     return wrap;
   }
@@ -597,6 +644,30 @@
   // ---------- refresh button + auto-refresh ----------
   els.sortBy.addEventListener('change', function () { render(); });
   els.exportCsv.addEventListener('click', exportCsv);
+  els.copyClip.addEventListener('click', function () {
+    var lines = state.watch.map(function (w) {
+      var trendStr = w.trend ? (w.trend.dir === 1 ? '+' : '') + w.trend.pct.toFixed(1) + '%' : '—';
+      return [w.name, w.price != null ? '$' + w.price.toFixed(2) : '', trendStr].join('\t');
+    });
+    navigator.clipboard.writeText(lines.join('\n')).then(function () {
+      setStatus('📋 Copied ' + state.watch.length + ' cards to clipboard');
+    }).catch(function () {
+      setStatus('Could not copy — click 📥 CSV instead', true);
+    });
+  });
+  els.compactToggle.addEventListener('click', function () {
+    compact = !compact;
+    document.body.classList.toggle('compact', compact);
+    chrome.storage.local.set({ ygCompact: compact });
+    els.compactToggle.textContent = compact ? '📐' : '📏';
+  });
+  function applyCompact() {
+    chrome.storage.local.get('ygCompact', function (d) {
+      compact = !!(d && d.ygCompact);
+      document.body.classList.toggle('compact', compact);
+      els.compactToggle.textContent = compact ? '📐' : '📏';
+    });
+  }
   els.refresh.addEventListener('click', refreshAll);
   els.retry.addEventListener('click', refreshAll);
   els.clearAll.addEventListener('click', function () {
@@ -676,6 +747,7 @@
 
   // ---------- init ----------
   chrome.action.setBadgeText({ text: '' });
+  applyCompact();
   load(function () {
     render();
     if (state.watch.length) refreshAll();
