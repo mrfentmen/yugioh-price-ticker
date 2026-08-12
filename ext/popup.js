@@ -28,7 +28,8 @@
     sortBy: document.getElementById('sortBy'),
     exportCsv: document.getElementById('exportCsv'),
     copyClip: document.getElementById('copyClip'),
-    compactToggle: document.getElementById('compactToggle')
+    compactToggle: document.getElementById('compactToggle'),
+    themeToggle: document.getElementById('themeToggle')
   };
 
   var dragIdx = -1;
@@ -408,6 +409,25 @@
     quote.appendChild(price);
     quote.appendChild(trend);
 
+    // ---- 24h change ----
+    var dayChg = dayChange(w);
+    if (dayChg != null) {
+      var chg = document.createElement('div');
+      chg.className = 'card-daychg' + (dayChg > 0 ? ' up' : dayChg < 0 ? ' down' : '');
+      chg.textContent = (dayChg >= 0 ? '+' : '') + Ygo.formatPrice(dayChg) + ' 24h';
+      quote.appendChild(chg);
+    }
+
+    // ---- ATH / ATL ----
+    var ath = allTimeHigh(w);
+    var atl = allTimeLow(w);
+    if (ath != null && atl != null) {
+      var range = document.createElement('div');
+      range.className = 'card-range';
+      range.textContent = 'H ' + Ygo.formatPrice(ath) + '  L ' + Ygo.formatPrice(atl);
+      quote.appendChild(range);
+    }
+
     var bars = document.createElement('div');
     bars.className = 'card-bars';
     bars.title = '30-day price sparkline';
@@ -600,6 +620,37 @@
     els.tape.style.animation = '';
   }
 
+  // ---------- helpers ----------
+  function dayChange(w) {
+    if (!Array.isArray(w.daily) || w.daily.length < 2) return null;
+    var now = Date.now(); var day = 24 * 60 * 60 * 1000;
+    var best = null;
+    for (var i = w.daily.length - 1; i >= 0; i--) {
+      var d = w.daily[i];
+      var dt = new Date(d.d + 'T12:00:00Z').getTime();
+      var ago = now - dt;
+      if (ago >= day * 0.8 && ago <= day * 1.3) { best = d.p; break; }
+      if (ago > day * 1.3 && best == null) { best = d.p; }
+    }
+    if (best == null && w.daily.length) best = w.daily[0].p;
+    if (best == null || w.price == null) return null;
+    return +(w.price - best).toFixed(2);
+  }
+
+  function allTimeHigh(w) {
+    if (!Array.isArray(w.daily) || !w.daily.length) return w.price;
+    var max = w.price || 0;
+    w.daily.forEach(function (d) { if (d.p > max) max = d.p; });
+    return max;
+  }
+
+  function allTimeLow(w) {
+    if (!Array.isArray(w.daily) || !w.daily.length) return w.price;
+    var min = w.price || Infinity;
+    w.daily.forEach(function (d) { if (d.p < min) min = d.p; });
+    return min === Infinity ? w.price : min;
+  }
+
   function esc(s) {
     var d = document.createElement('div');
     d.textContent = s == null ? '' : String(s);
@@ -655,6 +706,20 @@
       setStatus('Could not copy — click 📥 CSV instead', true);
     });
   });
+  els.themeToggle.addEventListener('click', function () {
+    document.body.classList.toggle('light');
+    var isLight = document.body.classList.contains('light');
+    chrome.storage.local.set({ ygLight: isLight });
+    els.themeToggle.textContent = isLight ? '🌙' : '☀️';
+  });
+  function applyTheme() {
+    chrome.storage.local.get('ygLight', function (d) {
+      var isLight = !!(d && d.ygLight);
+      document.body.classList.toggle('light', isLight);
+      els.themeToggle.textContent = isLight ? '🌙' : '☀️';
+    });
+  }
+
   els.compactToggle.addEventListener('click', function () {
     compact = !compact;
     document.body.classList.toggle('compact', compact);
@@ -747,6 +812,7 @@
 
   // ---------- init ----------
   chrome.action.setBadgeText({ text: '' });
+  applyTheme();
   applyCompact();
   load(function () {
     render();

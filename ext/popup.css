@@ -294,6 +294,10 @@ h1 { font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
 .card-trend.up { color: var(--up); }
 .card-trend.down { color: var(--down); }
 .card-trend.flat { color: var(--flat); }
+.card-daychg { font-size: 9.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.card-daychg.up { color: var(--up); }
+.card-daychg.down { color: var(--down); }
+.card-range { font-size: 8.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 1px; }
 
 .card-markets {
   grid-area: markets;
@@ -340,6 +344,8 @@ body.compact .card-set { font-size: 9.5px; }
 body.compact .card-price { font-size: 13px; }
 body.compact .card-variant { font-size: 7.5px; }
 body.compact .card-trend { font-size: 9.5px; }
+body.compact .card-daychg { font-size: 8.5px; }
+body.compact .card-range { font-size: 7.5px; }
 body.compact .card-bars { height: 12px; }
 body.compact .card-bars .bar { width: 0.8px; }
 body.compact .card-markets { font-size: 8.5px; }
@@ -442,6 +448,26 @@ body.compact .drag-grip { left: -8px; font-size: 9px; }
 @keyframes alertFlash {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
+}
+
+/* ---------- light theme ---------- */
+body.light {
+  --bg: #f8f6fe;
+  --panel: #ffffff;
+  --panel-2: #f3f0fc;
+  --line: #d8d2f0;
+  --text: #1a1428;
+  --muted: #7b6fa0;
+  --accent: #d97706;
+  --accent-2: #b45309;
+  --up: #16a34a;
+  --down: #dc2626;
+  --flat: #6b7280;
+  --card: var(--panel);
+  --card2: var(--panel-2);
+  --border: var(--line);
+  --accent2: var(--accent-2);
+  background: linear-gradient(165deg, #f0ecfa 0%, var(--bg) 60%, var(--bg) 100%);
 }
 
 /* ---------- alert log ---------- */
