@@ -441,12 +441,12 @@
     wrap.appendChild(panel);
 
     row.addEventListener('click', function () {
-      chrome.tabs.create({ url: 'https://ygoprodeck.com/card/?search=' + encodeURIComponent(w.name) });
+      chrome.windows.create({ type: 'popup', url: 'https://ygoprodeck.com/card/?search=' + encodeURIComponent(w.name), width: 900, height: 700 });
     });
     row.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter' || ev.key === ' ') {
         ev.preventDefault();
-        chrome.tabs.create({ url: 'https://ygoprodeck.com/card/?search=' + encodeURIComponent(w.name) });
+        chrome.windows.create({ type: 'popup', url: 'https://ygoprodeck.com/card/?search=' + encodeURIComponent(w.name), width: 900, height: 700 });
       }
     });
     return wrap;
