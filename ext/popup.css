@@ -158,6 +158,15 @@ h1 { font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
 
 .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
+.recent-searches { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 0; min-height: 0; }
+.recent-chip {
+  padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--card); color: var(--muted);
+  font-size: 10px; cursor: pointer; white-space: nowrap;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.recent-chip:hover { border-color: var(--accent); color: var(--accent); }
+
 .results {
   position: absolute;
   left: 14px;
@@ -216,6 +225,9 @@ h1 { font-size: 17px; font-weight: 800; letter-spacing: 0.2px; }
 .list-title { font-size: 11px; font-weight: 800; letter-spacing: 1.4px; color: var(--muted); }
 
 .portfolio { font-size: 11px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; margin-left: auto; margin-right: 8px; }
+.portfolio-day { font-size: 10px; font-weight: 800; }
+.portfolio-day.up { color: var(--up); }
+.portfolio-day.down { color: var(--down); }
 
 .sort-select {
   padding: 2px 6px; border: 1px solid var(--border); border-radius: 5px;
@@ -366,6 +378,7 @@ body.compact .card-markets { font-size: 8.5px; }
 body.compact .row-x { width: 18px; height: 18px; }
 body.compact .alert-btn { width: 20px; height: 20px; font-size: 10px; }
 body.compact .drag-grip { left: -8px; font-size: 9px; }
+body.compact .card-row { padding-left: 5px !important; }
 
 /* ---------- empty / status / footer ---------- */
 .empty { padding: 22px 14px; text-align: center; color: var(--muted); }
